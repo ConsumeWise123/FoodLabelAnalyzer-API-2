@@ -141,7 +141,7 @@ def get_files_with_ingredient_info(ingredient, embeddings_titles_list, N=1):
             
     return file_paths, refs
   
-def analyze_harmful_ingredients(ingredient_list = [], ingredient = "", assitant_id = assistant_id, client = client):
+def analyze_harmful_ingredients(ingredient_list = [], ingredient = "", assistant_id = 0, client = None):
     
     is_ingredient_not_found_in_doc = False
     
@@ -382,13 +382,13 @@ def get_ingredient_analysis(request: IngredientAnalysisRequest):
                     if default_assistant is None:
                         default_assistant = assistant_id_ingredient
                     continue
-                ingredient_analysis, is_ingredient_in_doc = analyze_harmful_ingredients(ingredient_list = [], ingredient = ingredient, assitant_id = assistant_id_ingredient.id, client = client)
+                ingredient_analysis, is_ingredient_in_doc = analyze_harmful_ingredients(ingredient_list = [], ingredient = ingredient, assistant_id = assistant_id_ingredient.id, client = client)
                 all_ingredient_analysis += ingredient_analysis + "\n"
                 if is_ingredient_in_doc:
                     refs.extend(refs_ingredient)
 
             #for ingredient in ingredients_not_found_in_journals:
-            ingredient_analysis, _ = analyze_harmful_ingredients(ingredient_list = ingredients_not_found_in_journals, ingredient = "", assitant_id = default_assistant.id, client = client)
+            ingredient_analysis, _ = analyze_harmful_ingredients(ingredient_list = ingredients_not_found_in_journals, ingredient = "", assistant_id = default_assistant.id, client = client)
             #no refs in Ingredients.docx
             all_ingredient_analysis += ingredient_analysis + "\n"
 
