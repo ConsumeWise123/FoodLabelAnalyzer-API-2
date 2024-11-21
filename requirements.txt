@@ -1,0 +1,11 @@
+openai
+pymongo
+openpyxl
+fastapi
+motor
+python-dotenv
+uvicorn
+logging
+sentence_transformers
+pydantic
+pandas
