@@ -81,7 +81,7 @@ async def find_product(product_name: str):
     
     try:
         words = product_name.split()
-        search_terms = [' '.join(words[:i]) for i in range(2, len(words) + 1)]
+        search_terms = [' '.join(words[:i]) for i in range(2, len(words) + 1)] + words
         product_list = set()
         
         for term in search_terms:
