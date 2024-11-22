@@ -323,7 +323,7 @@ def create_default_assistant(client):
     )
 
     
-    file_streams = open("docs/Ingredients.docx", "rb")
+    file_streams = [open("docs/Ingredients.docx", "rb")]
     
     # Use the upload and poll SDK helper to upload the files, add them to the vector store,
     # and poll the status of the file batch for completion.
