@@ -303,7 +303,7 @@ def create_default_assistant(client):
 
     assistant2 = client.beta.assistants.create(
       name="Harmful Ingredients",
-      instructions=f"You are an expert dietician. Use your knowledge base to answer questions about the ingredient {ingredient} in a food product.",
+      instructions=f"You are an expert dietician. Use your knowledge base to answer questions about a given ingredient in a food product.",
       model="gpt-4o",
       tools=[{"type": "file_search"}],
       temperature=0,
