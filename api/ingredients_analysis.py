@@ -299,7 +299,7 @@ def get_assistant_for_ingredient(ingredient, client, embeddings_titles_list, def
         
     return assistant2, refs, file_paths
 
-def create_default_assistant():
+def create_default_assistant(client):
 
     assistant2 = client.beta.assistants.create(
       name="Harmful Ingredients",
@@ -428,7 +428,7 @@ def get_ingredient_analysis(request: IngredientAnalysisRequest):
                     continue
 
                 if default_assistant is None:
-                    default_assistant = create_default_assistant()
+                    default_assistant = create_default_assistant(client)
                     
                 ingredient_analysis, is_ingredient_in_doc = analyze_harmful_ingredients(ingredient_list = [], ingredient = ingredient, assistant_id = assistant_id_ingredient.id, client = client)
                 all_ingredient_analysis += ingredient_analysis + "\n"
