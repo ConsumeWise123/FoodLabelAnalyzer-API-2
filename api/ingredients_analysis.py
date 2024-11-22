@@ -434,10 +434,11 @@ def get_ingredient_analysis(request: IngredientAnalysisRequest):
                 all_ingredient_analysis += ingredient_analysis + "\n"
                 if is_ingredient_in_doc:
                     refs.extend(refs_ingredient)
-
-            #for ingredient in ingredients_not_found_in_journals:
-            ingredient_analysis, _ = analyze_harmful_ingredients(ingredient_list = ingredients_not_found_in_journals, ingredient = "", assistant_id = default_assistant.id, client = client)
-            #no refs in Ingredients.docx
-            all_ingredient_analysis += ingredient_analysis + "\n"
+            
+            if len(ingredients_not_found_in_journals) > 0:
+                print(f"ingredients_not_found_in_journals : {ingredients_not_found_in_journals}")
+                ingredient_analysis, _ = analyze_harmful_ingredients(ingredient_list = ingredients_not_found_in_journals, ingredient = "", assistant_id = default_assistant.id, client = client)
+                #no refs in Ingredients.docx
+                all_ingredient_analysis += ingredient_analysis + "\n"
 
         return {'refs' : refs, 'all_ingredient_analysis' : all_ingredient_analysis, 'processing_level' : processing_level}
