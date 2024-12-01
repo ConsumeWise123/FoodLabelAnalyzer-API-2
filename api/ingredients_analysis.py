@@ -421,7 +421,19 @@ async def get_ingredient_analysis(request: Request):
 
             #Create assistant for processing level
             #assistant_p, embeddings_titles_list = create_assistant_and_embeddings(client, ['docs/embeddings.pkl', 'docs/embeddings_harvard.pkl'])
-
+            embeddings_file_list = ['docs/embeddings.pkl', 'docs/embeddings_harvard.pkl']
+            
+            embeddings_titles_list = []
+            for embeddings_file in embeddings_file_list:
+              embeddings_titles = []
+          
+              print(f"Reading {embeddings_file}")
+              # Load both sentences and embeddings
+              with open(embeddings_file, 'rb') as f:
+                  loaded_data = pickle.load(f)
+                  embeddings_titles = loaded_data['embeddings']
+                  embeddings_titles_list.append(embeddings_titles)
+          
             processing_level = analyze_processing_level(ingredients_list, assistant_p_id, client) if ingredients_list else ""
 
             print(f"DEBUG = processing level is {processing_level}")
