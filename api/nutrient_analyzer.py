@@ -103,6 +103,7 @@ async def get_nutrient_analysis(request: NutrientAnalysisRequest):
                         rda_analysis(nutritional_information, serving_size)
                     )
                     print(f"DEBUG : ICMR based analysis is {nutrient_analysis}")
+                    print(f"DEBUG : RDA Data is {nutrient_analysis_rda} with userServingSize of type {type(nutrient_analysis_rda_data['userServingSize'])} and nutritionPerServing of type {type(nutrient_analysis_rda_data['nutritionPerServing'])}")
                 except Exception as e:
                     raise
                 
