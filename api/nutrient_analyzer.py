@@ -113,7 +113,7 @@ async def get_nutrient_analysis(request: NutrientAnalysisRequest):
                     raise
                 
                 try:
-                    nutrient_analysis_rda = await find_nutrition(nutrient_analysis_rda_data)
+                    nutrient_analysis_rda = find_nutrition(nutrient_analysis_rda_data)
                     print(f"DEBUG : RDA based analysis is {nutrient_analysis_rda}")
                 except Exception as e:
                     raise
