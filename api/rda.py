@@ -67,7 +67,7 @@ async def find_nutrition(data):
     if not data:
         return ""
     try:
-        print(f"DEBUG - data is {data}")
+        #print(f"DEBUG - data is {data}")
         print(f"DEBUG - data['nutritionPerServing'] is {data['nutritionPerServing']}")
         print(f"DEBUG - data['userServingSize'] is {data['userServingSize']}")
         print(f"DEBUG - type of data['userServingSize'] is {type(data['userServingSize'])}")
