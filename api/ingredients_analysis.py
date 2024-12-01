@@ -274,7 +274,7 @@ def get_assistant_for_ingredient(ingredient, client, embeddings_titles_list, def
 
     # Ready the files for upload to OpenAI.     
     file_paths, refs = get_files_with_ingredient_info(ingredient, embeddings_titles_list, N)
-    if file_paths[0] == "docs/Ingredients.docx" and default_assistant is not None:
+    if file_paths[0] == "docs/Ingredients.docx":
         print(f"Using Ingredients.docx for analyzing ingredient {ingredient}")
         return default_assistant, [], file_paths
         
@@ -292,7 +292,7 @@ def get_assistant_for_ingredient(ingredient, client, embeddings_titles_list, def
     print(file_batch2.status)
     print(file_batch2.file_counts)
 
-    #harmful Ingredients
+    #To make the files accessible to your assistant, update the assistant’s tool_resources with the new vector_store id.
     assistant2 = client.beta.assistants.update(
       assistant_id=assistant2.id,
       tool_resources={"file_search": {"vector_store_ids": [vector_store2.id]}},
@@ -397,13 +397,6 @@ def process_ingredient(ingredient, client, embeddings_titles_list, default_assis
     assistant_id_ingredient, refs_ingredient, file_paths = get_assistant_for_ingredient(ingredient, client, embeddings_titles_list, default_assistant, 2)
     if file_paths[0] == "docs/Ingredients.docx":
         ingredients_not_found_in_journal = ingredient
-        if default_assistant is None:
-            default_assistant = assistant_id_ingredient
-        continue
-        
-
-    if default_assistant is None:
-        default_assistant = create_default_assistant(client)
                     
     ingredient_analysis, is_ingredient_in_doc = analyze_harmful_ingredients(ingredient_list = [], ingredient = ingredient, assistant_id = assistant_id_ingredient.id, client = client)
     ingredient_analysis += "\n"
@@ -441,7 +434,7 @@ def get_ingredient_analysis(request: IngredientAnalysisRequest):
             processing_level = analyze_processing_level(ingredients_list, assistant_p.id, client) if ingredients_list else ""
 
             ingredients_not_found_in_journals = []
-            default_assistant = None
+            default_assistant = create_default_assistant(client)
             
             #for ingredient in ingredients_list:
             #    ingredient_analysis, refs_ingredient, ingredient_not_found_in_journal =  process_ingredient(ingredient, client, embeddings_titles_list, default_assistant)
