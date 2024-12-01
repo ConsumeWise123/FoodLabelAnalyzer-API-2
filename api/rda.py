@@ -62,7 +62,7 @@ def process_nutrition_data(nutrition_per_serving, user_serving_size):
     print(f"DEBUG - percentage_daily_values {percentage_daily_values}")
     return scaled_nutrition, percentage_daily_values
 
-async def find_nutrition(data):
+def find_nutrition(data):
     #data is a dict. See https://github.com/ConsumeWise123/rda1/blob/main/clientp.py
     if not data:
         return ""
@@ -83,7 +83,7 @@ async def find_nutrition(data):
         #    return json.dumps({"error": "Invalid user serving size"})
 
         # Process and respond with scaled values and daily percentages
-        scaled_nutrition, percentage_daily_values = await process_nutrition_data(nutrition_per_serving, user_serving_size)
+        scaled_nutrition, percentage_daily_values = process_nutrition_data(nutrition_per_serving, user_serving_size)
         print(f"DEBUG : percentage_daily_values : {percentage_daily_values}")
 
         rda_analysis_str = f"Nutrition per serving as percentage of Recommended Dietary Allowance (RDA) is {json.dumps(percentage_daily_values)}"
