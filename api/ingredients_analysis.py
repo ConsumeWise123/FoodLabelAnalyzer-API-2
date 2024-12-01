@@ -441,12 +441,12 @@ async def async_process_ingredients(ingredients_list, client, embeddings_titles_
     return refs, all_ingredient_analysis
     
 # Define the request body using a simple BaseModel (without complex pydantic models if not needed)
-class IngredientAnalysisRequest(BaseModel):
-    product_info_from_db: dict
+#class IngredientAnalysisRequest(BaseModel):
+#    product_info_from_db: dict,
     
 @app.post("/api/processing_level-ingredient-analysis")
-async def get_ingredient_analysis(request: IngredientAnalysisRequest):
-    product_info_from_db = request.product_info_from_db
+async def get_ingredient_analysis(product_info_from_db, assistant_p, embeddings_titles_list):
+    #product_info_from_db = request.product_info_from_db
         
     if product_info_from_db:
         brand_name = product_info_from_db.get("brandName", "")
@@ -463,7 +463,7 @@ async def get_ingredient_analysis(request: IngredientAnalysisRequest):
             client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
             #Create assistant for processing level
-            assistant_p, embeddings_titles_list = create_assistant_and_embeddings(client, ['docs/embeddings.pkl', 'docs/embeddings_harvard.pkl'])
+            #assistant_p, embeddings_titles_list = create_assistant_and_embeddings(client, ['docs/embeddings.pkl', 'docs/embeddings_harvard.pkl'])
 
             processing_level = analyze_processing_level(ingredients_list, assistant_p.id, client) if ingredients_list else ""
 
