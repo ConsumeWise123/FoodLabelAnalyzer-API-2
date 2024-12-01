@@ -395,8 +395,8 @@ def process_ingredient(ingredient, client, embeddings_titles_list, default_assis
     ingredient_not_found_in_journal = ""
     
     assistant_id_ingredient, refs_ingredient, file_paths = get_assistant_for_ingredient(ingredient, client, embeddings_titles_list, default_assistant, 2)
-    if file_paths[0] == "docs/Ingredients.docx":
-        ingredient_not_found_in_journal = ingredient
+    #if file_paths[0] == "docs/Ingredients.docx":
+    #    ingredient_not_found_in_journal = ingredient
                     
     ingredient_analysis, is_ingredient_in_doc = analyze_harmful_ingredients(ingredient_list = [], ingredient = ingredient, assistant_id = assistant_id_ingredient.id, client = client)
     ingredient_analysis += "\n"
@@ -404,8 +404,9 @@ def process_ingredient(ingredient, client, embeddings_titles_list, default_assis
     if not is_ingredient_in_doc:
         refs_ingredient = []
         
-    return ingredient_analysis, refs_ingredient, ingredient_not_found_in_journal
-        
+    #return ingredient_analysis, refs_ingredient, ingredient_not_found_in_journal
+    return ingredient_analysis, refs_ingredient
+   
 # Define the request body using a simple BaseModel (without complex pydantic models if not needed)
 class IngredientAnalysisRequest(BaseModel):
     product_info_from_db: dict
@@ -456,23 +457,24 @@ def get_ingredient_analysis(request: IngredientAnalysisRequest):
                     ingredient = future_to_ingredient[future]
                     try:
                         # Unpack the results from process_ingredient
-                        ingredient_analysis, refs_ingredient, ingredient_not_found_in_journal = future.result()
-                        
+                        #ingredient_analysis, refs_ingredient, ingredient_not_found_in_journal = future.result()
+                        ingredient_analysis, refs_ingredient = future.result()
+
                         # Collect results
                         all_ingredient_analysis += ingredient_analysis
                         refs.extend(refs_ingredient)
                         
                         # Track ingredients not found in journals
-                        if ingredient_not_found_in_journal != "":
-                            ingredients_not_found_in_journals.append(ingredient_not_found_in_journal)
+                        #if ingredient_not_found_in_journal != "":
+                        #    ingredients_not_found_in_journals.append(ingredient_not_found_in_journal)
                     
                     except Exception as exc:
                         print(f'Processing {ingredient} generated an exception: {exc}')
                         
-            if len(ingredients_not_found_in_journals) > 0:
-                print(f"ingredients_not_found_in_journals : {ingredients_not_found_in_journals}")
-                ingredient_analysis, _ = analyze_harmful_ingredients(ingredient_list = ingredients_not_found_in_journals, ingredient = "", assistant_id = default_assistant.id, client = client)
-                #no refs in Ingredients.docx
-                all_ingredient_analysis += ingredient_analysis + "\n"
+            #if len(ingredients_not_found_in_journals) > 0:
+            #    print(f"ingredients_not_found_in_journals : {ingredients_not_found_in_journals}")
+            #    ingredient_analysis, _ = analyze_harmful_ingredients(ingredient_list = ingredients_not_found_in_journals, ingredient = "", assistant_id = default_assistant.id, client = client)
+            #    #no refs in Ingredients.docx
+            #    all_ingredient_analysis += ingredient_analysis + "\n"
 
         return {'refs' : refs, 'all_ingredient_analysis' : all_ingredient_analysis, 'processing_level' : processing_level}
