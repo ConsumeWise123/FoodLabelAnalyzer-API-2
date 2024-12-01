@@ -75,64 +75,6 @@ def find_product_nutrients(product_info_from_db):
 # Define the request body using a simple BaseModel (without complex pydantic models if not needed)
 class NutrientAnalysisRequest(BaseModel):
     product_info_from_db: dict
-    
-async def get_nutrient_analysis_old(request: NutrientAnalysisRequest):
-    product_info = request.product_info_from_db
-    try:
-        if ("nutritionalInformation" not in product_info or "servingSize" not in product_info or "quantity" not in product_info["servingSize"]):
-            return {"nutrition_analysis" : ""}
-        if (len(product_info["nutritionalInformation"]) == 0 or product_info["servingSize"]["quantity"] == 0):
-            return {"nutrition_analysis" : ""}
-            
-        nutritional_information = product_info["nutritionalInformation"]
-        
-        serving_size = product_info["servingSize"]["quantity"]
-        
-        nutrient_analysis_rda = ""
-        nutrient_analysis = ""
-        nutritional_level = ""
-                
-        if nutritional_information:
-            try:
-                product_type, calories, sugar, salt, serving_size = find_product_nutrients(product_info)
-            except Exception as e:
-                print(f"Error in find_product_nutrients: {str(e)}", exc_info=True)
-                raise
-                
-            if product_type is not None and serving_size is not None and serving_size > 0:
-                try:
-                    nutrient_analysis = await analyze_nutrients(product_type, calories, sugar, salt, serving_size)
-                except Exception as e:
-                    raise
-            else:
-                error_msg = "Product information in the db is corrupt"
-                raise HTTPException(status_code=400, detail=error_msg)
-
-            try:
-                nutrient_analysis_rda_data = await rda_analysis(nutritional_information, serving_size)
-            except Exception as e:
-                raise
-
-            try:
-                nutrient_analysis_rda = await find_nutrition(nutrient_analysis_rda_data)
-            except Exception as e:
-                raise
-                    
-            try:
-                nutritional_level = await analyze_nutrition_icmr_rda(nutrient_analysis, nutrient_analysis_rda)
-                return {"nutrition_analysis" : nutritional_level}
-            except Exception as e:
-                raise
-                
-        else:
-            error_msg = "Nutritional information is required"
-            raise HTTPException(status_code=400, detail=error_msg)
-
-    except HTTPException as http_ex:
-        raise http_ex
-        
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/nutrient-analysis")
 async def get_nutrient_analysis(request: NutrientAnalysisRequest):
@@ -172,6 +114,7 @@ async def get_nutrient_analysis(request: NutrientAnalysisRequest):
                     
                 try:
                     nutritional_level = await analyze_nutrition_icmr_rda(nutrient_analysis, nutrient_analysis_rda)
+                    print(f"DEBUG : ICMR and RDA based analysis is {nutritional_level}")
                     return {"nutrition_analysis" : nutritional_level}
                 except Exception as e:
                     raise
