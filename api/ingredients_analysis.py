@@ -3,7 +3,7 @@ import sys, pickle
 from functools import wraps
 import os
 import json
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Dict, Any
 from sentence_transformers import SentenceTransformer, util
@@ -399,8 +399,11 @@ async def async_process_ingredients(ingredients_list, client, embeddings_titles_
 #    product_info_from_db: dict,
     
 @app.post("/api/processing_level-ingredient-analysis")
-async def get_ingredient_analysis(product_info_from_db, assistant_p, embeddings_titles_list):
-    print(f" DEBUG - 1. {product_info_from_db} 2. {assistant_p} 3. {embeddings_titles_list}")
+async def get_ingredient_analysis(request: Request):
+    payload = await request.json()
+    product_info_from_db = payload.get('product_info_from_db')
+    assistant_p = payload.get('assistant_p')
+    embeddings_titles_list = payload.get('embeddings_titles_list')
         
     if product_info_from_db:
         brand_name = product_info_from_db.get("brandName", "")
@@ -424,29 +427,6 @@ async def get_ingredient_analysis(product_info_from_db, assistant_p, embeddings_
             print(f"DEBUG = processing level is {processing_level}")
             
             default_assistant = create_default_assistant(client)
-
-            # Use ThreadPoolExecutor for parallel processing
-            #with ThreadPoolExecutor() as executor:
-            #    # Create futures for each ingredient
-            #    future_to_ingredient = {
-            #        executor.submit(process_ingredient, ingredient, client, embeddings_titles_list, default_assistant): ingredient 
-            #        for ingredient in ingredients_list
-            #    }
-                
-            #    # Process results as they complete
-            #    for future in as_completed(future_to_ingredient):
-            #        ingredient = future_to_ingredient[future]
-            #        try:
-            #            # Unpack the results from process_ingredient
-            #            ingredient_analysis, refs_ingredient = future.result()
-
-                        # Collect results
-            #            all_ingredient_analysis += ingredient_analysis
-            #            refs.extend(refs_ingredient)
-
-                    
-            #        except Exception as exc:
-            #            print(f'Processing {ingredient} generated an exception: {exc}')
             
             refs, all_ingredient_analysis = await async_process_ingredients(ingredients_list, client, embeddings_titles_list, default_assistant)
 
