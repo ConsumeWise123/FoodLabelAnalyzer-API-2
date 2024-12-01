@@ -401,10 +401,11 @@ async def async_process_ingredients(ingredients_list, client, embeddings_titles_
 @app.post("/api/processing_level-ingredient-analysis")
 async def get_ingredient_analysis(request: Request):
     payload = await request.json()
+    print(f"DEBUG - payload obtained {payload}")
     product_info_from_db = payload.get('product_info_from_db')
     assistant_p_id = payload.get('assistant_p_id')
-    embeddings_titles_list = payload.get('embeddings_titles_list')
-        
+    print("DEBUG - product_info_from_db and assistant_p_id are obtained from payload")
+    
     if product_info_from_db:
         brand_name = product_info_from_db.get("brandName", "")
         product_name = product_info_from_db.get("productName", "")
