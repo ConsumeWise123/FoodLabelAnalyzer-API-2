@@ -59,52 +59,6 @@ def find_relevant_file_paths(ingredient, embeddings, titles, folder_name, journa
     print(f"Returning citations : {list(set(sorted(refs)))}")    
     return file_paths, file_titles, list(set(sorted(refs)))
 
-def create_assistant_and_embeddings(client, embeddings_file_list):
-    assistant1 = client.beta.assistants.create(
-      name="Processing Level",
-      instructions="You are an expert dietician. Use your knowledge base to answer questions about the processing level of food product.",
-      model="gpt-4o",
-      tools=[{"type": "file_search"}],
-      temperature=0,
-      top_p = 0.85
-      )
-
-      # Create a vector store
-    vector_store1 = client.beta.vector_stores.create(name="Processing Level Vec")
-    
-    # Ready the files for upload to OpenAI
-    file_paths = ["docs/Processing_Level.docx"]
-    file_streams = [open(path, "rb") for path in file_paths]
-    
-    # Use the upload and poll SDK helper to upload the files, add them to the vector store,
-    # and poll the status of the file batch for completion.
-    file_batch1 = client.beta.vector_stores.file_batches.upload_and_poll(
-      vector_store_id=vector_store1.id, files=file_streams
-    )
-    
-    # You can print the status and the file counts of the batch to see the result of this operation.
-    print(file_batch1.status)
-    print(file_batch1.file_counts)
-
-    #Processing Level
-    assistant1 = client.beta.assistants.update(
-      assistant_id=assistant1.id,
-      tool_resources={"file_search": {"vector_store_ids": [vector_store1.id]}},
-    )
-
-    embeddings_titles_list = []
-    for embeddings_file in embeddings_file_list:
-      embeddings_titles = []
-  
-      print(f"Reading {embeddings_file}")
-      # Load both sentences and embeddings
-      with open(embeddings_file, 'rb') as f:
-          loaded_data = pickle.load(f)
-          embeddings_titles = loaded_data['embeddings']
-          embeddings_titles_list.append(embeddings_titles)
-
-    return assistant1, embeddings_titles_list
-
 def get_files_with_ingredient_info(ingredient, embeddings_titles_list, N=1):
 
     embeddings_titles_1 = embeddings_titles_list[0]
