@@ -160,11 +160,13 @@ async def get_nutrient_analysis(request: NutrientAnalysisRequest):
                         analyze_nutrients(product_type, calories, sugar, salt, serving_size),
                         rda_analysis(nutritional_information, serving_size)
                     )
+                    print(f"DEBUG : ICMR based analysis is {nutrient_analysis}")
                 except Exception as e:
                     raise
                 
                 try:
                     nutrient_analysis_rda = await find_nutrition(nutrient_analysis_rda_data)
+                    print(f"DEBUG : RDA based analysis is {nutrient_analysis_rda}")
                 except Exception as e:
                     raise
                     
