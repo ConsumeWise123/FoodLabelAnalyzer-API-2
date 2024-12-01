@@ -19,7 +19,7 @@ def get_consumption_context_row_num(df_str, client, user_query):
         model="gpt-4o",  # Make sure to use an appropriate model
         messages=[
             {"role": "system", "content": f"""
-            Return row number of the line which has the category and sub-category of the food product provided by the user.
+            Return row number of the line which has the category and sub-category of the food product provided by the user. Output must only be an integer row number and nothing else
             {df_str}"""
             },
             {"role": "user", "content": user_query}
@@ -44,6 +44,8 @@ def get_consumption_context(user_query, client):
     #client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
     response = get_consumption_context_row_num(df_str, client, user_query)
+    print(f"DEBUG - response to extract row num from {response}")
+    
     row_num = int(response.split()[-1])
     #print(f"Row num is {row_num}")
     #print(df.iloc[row_num])
