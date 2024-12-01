@@ -21,8 +21,8 @@ def scale_nutrition(nutrition_per_serving, user_serving_size):
     }
 
 # Function to calculate percentage of daily value
-def calculate_percentage(nutrient_value, daily_value):
-    print(f"DEBUG : nutrient_value : {nutrient_value} daily_value : {daily_value}")
+def calculate_percentage(nu, nutrient_value, daily_value):
+    print(f"DEBUG : nutrient : {nu} nutrient_value : {nutrient_value} daily_value : {daily_value}")
     if daily_value == 0 or math.isnan(nutrient_value):
         return 'N/A'
     return f"{round((nutrient_value / daily_value) * 100, 2)}%"
@@ -45,19 +45,21 @@ def process_nutrition_data(nutrition_per_serving, user_serving_size):
     }
 
     scaled_nutrition = scale_nutrition(nutrition_per_serving, user_serving_size)
+    print(f"DEBUG - scaled_nutrition {scaled_nutrition}")
     #Example : scaled_nutrition : {'energy': 86.86, 'protein': 1.26, 'carbohydrates': 14.29, 'addedSugars': 5.06, 'dietaryFiber': 0.0, 
     #'totalFat': 2.74, 'saturatedFat': 1.28, 'monounsaturatedFat': 0.0, 'polyunsaturatedFat': 0.0, 'transFat': 0.0, 'sodium': 52.83}
 
     percentage_daily_values = {
-        'energy': calculate_percentage(scaled_nutrition['energy'], daily_values['energy']),
-        'protein': calculate_percentage(scaled_nutrition['protein'], daily_values['protein']),
-        'carbohydrates': calculate_percentage(scaled_nutrition['carbohydrates'], daily_values['carbohydrates']),
-        'addedSugars': calculate_percentage(scaled_nutrition['addedSugars'], daily_values['addedSugars']),
-        'dietaryFiber': calculate_percentage(scaled_nutrition['dietaryFiber'], daily_values['dietaryFiber']),
-        'totalFat': calculate_percentage(scaled_nutrition['totalFat'], daily_values['totalFat']),
-        'saturatedFat': calculate_percentage(scaled_nutrition['saturatedFat'], daily_values['saturatedFat']),
-        'sodium': calculate_percentage(scaled_nutrition['sodium'], daily_values['sodium']),
+        'energy': calculate_percentage('energy', scaled_nutrition['energy'], daily_values['energy']),
+        'protein': calculate_percentage('protein', scaled_nutrition['protein'], daily_values['protein']),
+        'carbohydrates': calculate_percentage('carbohydrates', scaled_nutrition['carbohydrates'], daily_values['carbohydrates']),
+        'addedSugars': calculate_percentage('addedSugars', scaled_nutrition['addedSugars'], daily_values['addedSugars']),
+        'dietaryFiber': calculate_percentage('dietaryFiber', scaled_nutrition['dietaryFiber'], daily_values['dietaryFiber']),
+        'totalFat': calculate_percentage('totalFat', scaled_nutrition['totalFat'], daily_values['totalFat']),
+        'saturatedFat': calculate_percentage('saturatedFat', scaled_nutrition['saturatedFat'], daily_values['saturatedFat']),
+        'sodium': calculate_percentage('sodium', scaled_nutrition['sodium'], daily_values['sodium']),
     }
+    print(f"DEBUG - percentage_daily_values {percentage_daily_values}")
     return scaled_nutrition, percentage_daily_values
 
 async def find_nutrition(data):
