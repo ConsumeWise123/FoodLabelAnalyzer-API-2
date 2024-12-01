@@ -105,10 +105,10 @@ async def get_nutrient_analysis(request: NutrientAnalysisRequest):
                     print(f"DEBUG : ICMR based analysis is {nutrient_analysis}")
                     # Or with a try-except approach
                     try:
-                        print(f"DEBUG : RDA Data is {nutrient_analysis_rda} with userServingSize of type {type(nutrient_analysis_rda_data['userServingSize'])} and nutritionPerServing of type {type(nutrient_analysis_rda_data['nutritionPerServing'])}")
+                        print(f"DEBUG : RDA Data is {nutrient_analysis_rda_data} with userServingSize of type {type(nutrient_analysis_rda_data['userServingSize'])} and nutritionPerServing of type {type(nutrient_analysis_rda_data['nutritionPerServing'])}")
                     except KeyError as e:
                         print(f"DEBUG: Missing key in nutrient_analysis_rda_data - {e}")
-                    print(f"DEBUG : RDA Data is {nutrient_analysis_rda} with userServingSize of type {type(nutrient_analysis_rda_data.get('userServingSize', 'N/A'))} and nutritionPerServing of type {type(nutrient_analysis_rda_data.get('nutritionPerServing', 'N/A'))}")
+                    print(f"DEBUG : RDA Data is {nutrient_analysis_rda_data} with userServingSize of type {type(nutrient_analysis_rda_data.get('userServingSize', 'N/A'))} and nutritionPerServing of type {type(nutrient_analysis_rda_data.get('nutritionPerServing', 'N/A'))}")
    
                 except Exception as e:
                     raise
