@@ -65,17 +65,20 @@ async def find_nutrition(data):
     if not data:
         return ""
     try:
-        nutrition_per_serving = data['nutritionPerServing']
-        user_serving_size = 0
+        print(f"DEBUG - data is {data}")
+        print(f"DEBUG - data['nutritionPerServing'] is {data['nutritionPerServing']}")
+        print(f"DEBUG - data['userServingSize'] is {data['userServingSize']}")
+        print(f"DEBUG - type of data['userServingSize'] is {type(data['userServingSize'])}")
         
-        if data['userServingSize'] != "":
-            user_serving_size = float(data['userServingSize'])
+        nutrition_per_serving = data['nutritionPerServing']
+        
+        user_serving_size = data['userServingSize']
 
 
         if not nutrition_per_serving:
             return json.dumps({"error": "Invalid nutrition data"})
-        elif user_serving_size <= 0:
-            return json.dumps({"error": "Invalid user serving size"})
+        #elif user_serving_size <= 0:
+        #    return json.dumps({"error": "Invalid user serving size"})
 
         # Process and respond with scaled values and daily percentages
         scaled_nutrition, percentage_daily_values = await process_nutrition_data(nutrition_per_serving, user_serving_size)
