@@ -2,7 +2,7 @@ import sys
 from .icmr import analyze_nutrients
 from .rda import find_nutrition, rda_analysis, analyze_nutrition_icmr_rda
 import os
-import json
+import json, asyncio
 from fastapi import FastAPI, HTTPException
 from typing import List, Dict, Any
 from pydantic import BaseModel
@@ -76,9 +76,7 @@ def find_product_nutrients(product_info_from_db):
 class NutrientAnalysisRequest(BaseModel):
     product_info_from_db: dict
     
-# Apply the decorator to your endpoint
-@app.post("/api/nutrient-analysis")
-async def get_nutrient_analysis(request: NutrientAnalysisRequest):
+async def get_nutrient_analysis_old(request: NutrientAnalysisRequest):
     product_info = request.product_info_from_db
     try:
         if ("nutritionalInformation" not in product_info or "servingSize" not in product_info or "quantity" not in product_info["servingSize"]):
@@ -130,6 +128,58 @@ async def get_nutrient_analysis(request: NutrientAnalysisRequest):
             error_msg = "Nutritional information is required"
             raise HTTPException(status_code=400, detail=error_msg)
 
+    except HTTPException as http_ex:
+        raise http_ex
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/nutrient-analysis")
+async def get_nutrient_analysis(request: NutrientAnalysisRequest):
+    product_info = request.product_info_from_db
+    try:
+        if ("nutritionalInformation" not in product_info or "servingSize" not in product_info or "quantity" not in product_info["servingSize"]):
+            return {"nutrition_analysis" : ""}
+        if (len(product_info["nutritionalInformation"]) == 0 or product_info["servingSize"]["quantity"] == 0):
+            return {"nutrition_analysis" : ""}
+            
+        nutritional_information = product_info["nutritionalInformation"]
+        serving_size = product_info["servingSize"]["quantity"]
+        
+        if nutritional_information:
+            try:
+                product_type, calories, sugar, salt, serving_size = find_product_nutrients(product_info)
+            except Exception as e:
+                print(f"Error in find_product_nutrients: {str(e)}", exc_info=True)
+                raise
+                
+            if product_type is not None and serving_size is not None and serving_size > 0:
+                # Parallel execution of nutrient analysis tasks
+                try:
+                    nutrient_analysis, nutrient_analysis_rda_data = await asyncio.gather(
+                        analyze_nutrients(product_type, calories, sugar, salt, serving_size),
+                        rda_analysis(nutritional_information, serving_size)
+                    )
+                except Exception as e:
+                    raise
+                
+                try:
+                    nutrient_analysis_rda = await find_nutrition(nutrient_analysis_rda_data)
+                except Exception as e:
+                    raise
+                    
+                try:
+                    nutritional_level = await analyze_nutrition_icmr_rda(nutrient_analysis, nutrient_analysis_rda)
+                    return {"nutrition_analysis" : nutritional_level}
+                except Exception as e:
+                    raise
+                
+            else:
+                error_msg = "Product information in the db is corrupt"
+                raise HTTPException(status_code=400, detail=error_msg)
+        else:
+            error_msg = "Nutritional information is required"
+            raise HTTPException(status_code=400, detail=error_msg)
     except HTTPException as http_ex:
         raise http_ex
         
