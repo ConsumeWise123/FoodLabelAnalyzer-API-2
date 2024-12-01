@@ -400,7 +400,7 @@ async def async_process_ingredients(ingredients_list, client, embeddings_titles_
     
 @app.post("/api/processing_level-ingredient-analysis")
 async def get_ingredient_analysis(product_info_from_db, assistant_p, embeddings_titles_list):
-    #product_info_from_db = request.product_info_from_db
+    print(f" DEBUG - 1. {product_info_from_db} 2. {assistant_p} 3. {embeddings_titles_list}")
         
     if product_info_from_db:
         brand_name = product_info_from_db.get("brandName", "")
