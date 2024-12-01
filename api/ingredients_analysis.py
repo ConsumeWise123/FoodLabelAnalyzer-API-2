@@ -11,6 +11,7 @@ import torch
 from pydantic import BaseModel
 from openai import OpenAI
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import asyncio
 
 app = FastAPI()
 
@@ -423,6 +424,10 @@ async def async_process_ingredients(ingredients_list, client, embeddings_titles_
             return None, []
 
     tasks = [process_single_ingredient(ingredient) for ingredient in ingredients_list]
+    #tasks creates a list of coroutines (async functions)
+    #asyncio.gather() runs these tasks concurrently
+    #When a task is waiting (e.g., during an API call or I/O operation),
+    #the event loop can switch to another task instead of sitting idle
     results = await asyncio.gather(*tasks)
     
     all_ingredient_analysis = ""
