@@ -462,6 +462,8 @@ async def get_ingredient_analysis(request: IngredientAnalysisRequest):
 
             processing_level = analyze_processing_level(ingredients_list, assistant_p.id, client) if ingredients_list else ""
 
+            print(f"DEBUG = processing level is {processing_level}")
+            
             default_assistant = create_default_assistant(client)
 
             # Use ThreadPoolExecutor for parallel processing
