@@ -402,7 +402,7 @@ async def async_process_ingredients(ingredients_list, client, embeddings_titles_
 async def get_ingredient_analysis(request: Request):
     payload = await request.json()
     product_info_from_db = payload.get('product_info_from_db')
-    assistant_p = payload.get('assistant_p')
+    assistant_p_id = payload.get('assistant_p_id')
     embeddings_titles_list = payload.get('embeddings_titles_list')
         
     if product_info_from_db:
@@ -422,7 +422,7 @@ async def get_ingredient_analysis(request: Request):
             #Create assistant for processing level
             #assistant_p, embeddings_titles_list = create_assistant_and_embeddings(client, ['docs/embeddings.pkl', 'docs/embeddings_harvard.pkl'])
 
-            processing_level = analyze_processing_level(ingredients_list, assistant_p.id, client) if ingredients_list else ""
+            processing_level = analyze_processing_level(ingredients_list, assistant_p_id, client) if ingredients_list else ""
 
             print(f"DEBUG = processing level is {processing_level}")
             
