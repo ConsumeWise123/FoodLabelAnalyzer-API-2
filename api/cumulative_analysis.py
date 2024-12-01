@@ -31,6 +31,8 @@ def generate_final_analysis(request: ProductRequest):
     claims_analysis = request.claims_analysis
     refs = request.refs
     
+    print(f"DEBUG - {product_name} by {brand_name}")
+    
     consumption_context = get_consumption_context(f"{product_name} by {brand_name}", client)
     
     system_prompt = """Tell the consumer whether the product is a healthy option at the assumed functionality along with the reasoning behind why it is a good option or not. Refer to Consumption Context as a guide for generating a recommendation. 
