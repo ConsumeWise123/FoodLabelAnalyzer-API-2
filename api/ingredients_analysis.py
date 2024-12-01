@@ -406,13 +406,41 @@ def process_ingredient(ingredient, client, embeddings_titles_list, default_assis
         
     #return ingredient_analysis, refs_ingredient, ingredient_not_found_in_journal
     return ingredient_analysis, refs_ingredient
-   
+
+# Alternative Approach: Asynchronous Processing
+async def async_process_ingredients(ingredients_list, client, embeddings_titles_list, default_assistant):
+    async def process_single_ingredient(ingredient):
+        try:
+            return await asyncio.to_thread(
+                process_ingredient, 
+                ingredient, 
+                client, 
+                embeddings_titles_list, 
+                default_assistant
+            )
+        except Exception as exc:
+            print(f'Processing {ingredient} generated an exception: {exc}')
+            return None, []
+
+    tasks = [process_single_ingredient(ingredient) for ingredient in ingredients_list]
+    results = await asyncio.gather(*tasks)
+    
+    all_ingredient_analysis = ""
+    refs = []
+    for result in results:
+        if result:
+            ingredient_analysis, refs_ingredient = result
+            all_ingredient_analysis += ingredient_analysis
+            refs.extend(refs_ingredient)
+    
+    return refs, all_ingredient_analysis
+    
 # Define the request body using a simple BaseModel (without complex pydantic models if not needed)
 class IngredientAnalysisRequest(BaseModel):
     product_info_from_db: dict
     
 @app.post("/api/processing_level-ingredient-analysis")
-def get_ingredient_analysis(request: IngredientAnalysisRequest):
+async def get_ingredient_analysis(request: IngredientAnalysisRequest):
     product_info_from_db = request.product_info_from_db
         
     if product_info_from_db:
@@ -434,31 +462,31 @@ def get_ingredient_analysis(request: IngredientAnalysisRequest):
 
             processing_level = analyze_processing_level(ingredients_list, assistant_p.id, client) if ingredients_list else ""
 
-            ingredients_not_found_in_journals = []
             default_assistant = create_default_assistant(client)
 
             # Use ThreadPoolExecutor for parallel processing
-            with ThreadPoolExecutor() as executor:
-                # Create futures for each ingredient
-                future_to_ingredient = {
-                    executor.submit(process_ingredient, ingredient, client, embeddings_titles_list, default_assistant): ingredient 
-                    for ingredient in ingredients_list
-                }
+            #with ThreadPoolExecutor() as executor:
+            #    # Create futures for each ingredient
+            #    future_to_ingredient = {
+            #        executor.submit(process_ingredient, ingredient, client, embeddings_titles_list, default_assistant): ingredient 
+            #        for ingredient in ingredients_list
+            #    }
                 
-                # Process results as they complete
-                for future in as_completed(future_to_ingredient):
-                    ingredient = future_to_ingredient[future]
-                    try:
-                        # Unpack the results from process_ingredient
-                        ingredient_analysis, refs_ingredient = future.result()
+            #    # Process results as they complete
+            #    for future in as_completed(future_to_ingredient):
+            #        ingredient = future_to_ingredient[future]
+            #        try:
+            #            # Unpack the results from process_ingredient
+            #            ingredient_analysis, refs_ingredient = future.result()
 
                         # Collect results
-                        all_ingredient_analysis += ingredient_analysis
-                        refs.extend(refs_ingredient)
+            #            all_ingredient_analysis += ingredient_analysis
+            #            refs.extend(refs_ingredient)
 
                     
-                    except Exception as exc:
-                        print(f'Processing {ingredient} generated an exception: {exc}')
-                    
+            #        except Exception as exc:
+            #            print(f'Processing {ingredient} generated an exception: {exc}')
+            
+            refs, all_ingredient_analysis = await async_process_ingredients(ingredients_list, client, embeddings_titles_list, default_assistant)
 
         return {'refs' : refs, 'all_ingredient_analysis' : all_ingredient_analysis, 'processing_level' : processing_level}
