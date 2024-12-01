@@ -436,15 +436,8 @@ def get_ingredient_analysis(request: IngredientAnalysisRequest):
 
             ingredients_not_found_in_journals = []
             default_assistant = create_default_assistant(client)
-            
-            #for ingredient in ingredients_list:
-            #    ingredient_analysis, refs_ingredient, ingredient_not_found_in_journal =  process_ingredient(ingredient, client, embeddings_titles_list, default_assistant)
-            #    all_ingredient_analysis += ingredient_analysis
-            #    refs.extend(refs_ingredient)
-            #    if ingredient_not_found_in_journal != "":
-            #        ingredients_not_found_in_journals.append(ingredient_not_found_in_journal)
 
-                # Use ThreadPoolExecutor for parallel processing
+            # Use ThreadPoolExecutor for parallel processing
             with ThreadPoolExecutor() as executor:
                 # Create futures for each ingredient
                 future_to_ingredient = {
@@ -457,24 +450,15 @@ def get_ingredient_analysis(request: IngredientAnalysisRequest):
                     ingredient = future_to_ingredient[future]
                     try:
                         # Unpack the results from process_ingredient
-                        #ingredient_analysis, refs_ingredient, ingredient_not_found_in_journal = future.result()
                         ingredient_analysis, refs_ingredient = future.result()
 
                         # Collect results
                         all_ingredient_analysis += ingredient_analysis
                         refs.extend(refs_ingredient)
-                        
-                        # Track ingredients not found in journals
-                        #if ingredient_not_found_in_journal != "":
-                        #    ingredients_not_found_in_journals.append(ingredient_not_found_in_journal)
+
                     
                     except Exception as exc:
                         print(f'Processing {ingredient} generated an exception: {exc}')
-                        
-            #if len(ingredients_not_found_in_journals) > 0:
-            #    print(f"ingredients_not_found_in_journals : {ingredients_not_found_in_journals}")
-            #    ingredient_analysis, _ = analyze_harmful_ingredients(ingredient_list = ingredients_not_found_in_journals, ingredient = "", assistant_id = default_assistant.id, client = client)
-            #    #no refs in Ingredients.docx
-            #    all_ingredient_analysis += ingredient_analysis + "\n"
+                    
 
         return {'refs' : refs, 'all_ingredient_analysis' : all_ingredient_analysis, 'processing_level' : processing_level}
