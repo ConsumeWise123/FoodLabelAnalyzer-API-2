@@ -392,11 +392,11 @@ def analyze_processing_level(ingredients, assistant_id, client):
     return processing_level_str
 
 def process_ingredient(ingredient, client, embeddings_titles_list, default_assistant):
-    ingredients_not_found_in_journal = ""
+    ingredient_not_found_in_journal = ""
     
     assistant_id_ingredient, refs_ingredient, file_paths = get_assistant_for_ingredient(ingredient, client, embeddings_titles_list, default_assistant, 2)
     if file_paths[0] == "docs/Ingredients.docx":
-        ingredients_not_found_in_journal = ingredient
+        ingredient_not_found_in_journal = ingredient
                     
     ingredient_analysis, is_ingredient_in_doc = analyze_harmful_ingredients(ingredient_list = [], ingredient = ingredient, assistant_id = assistant_id_ingredient.id, client = client)
     ingredient_analysis += "\n"
